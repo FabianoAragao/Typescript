@@ -10,14 +10,16 @@ import { MensagemView } from '../views/mensagem-view.js';
 import { NegociacoesView } from '../views/negociacoes-view.js';
 import { DiasDaSemana } from '../enum/dias-da-semana.js';
 import { tempoDeExecucao } from '../decorators/tempo-de-execucao.js';
+import { inspect } from '../decorators/inspect.js';
+import { domInjector } from '../decorators/dom-injector.js';
+import { NegociacoesService } from '../servicos/negociacoesServices.js';
+import { imprimir } from '../utils/imprimir.js';
 export class NegociacaoController {
     constructor() {
         this.negociacoes = new Negociacoes();
         this.negociacoesView = new NegociacoesView('#negociacoesView');
         this.mensagemView = new MensagemView('#mensagemView');
-        this.inputData = document.querySelector('#data');
-        this.inputQuantidade = document.querySelector('#quantidade');
-        this.inputValor = document.querySelector('#valor');
+        this.negociacoesService = new NegociacoesService();
         this.negociacoesView.update(this.negociacoes);
     }
     adiciona() {
@@ -27,7 +29,24 @@ export class NegociacaoController {
             return;
         }
         this.negociacoes.adiciona(negociacao);
+        imprimir(negociacao, this.negociacoes);
         this.atualizaview();
+    }
+    importaDados() {
+        this.negociacoesService.obterNegociacoesDoDia()
+            .then(negociacoesDeHoje => {
+            return negociacoesDeHoje.filter(negociacoesDeHoje => {
+                return !this.negociacoes
+                    .lista()
+                    .some(Negociacao => Negociacao.ehIgual(negociacoesDeHoje));
+            });
+        })
+            .then(negociacoesArrayJson => {
+            for (let negociacao of negociacoesArrayJson) {
+                this.negociacoes.adiciona(negociacao);
+            }
+            this.negociacoesView.update(this.negociacoes);
+        });
     }
     limparFormulario() {
         this.inputData.value = '';
@@ -46,5 +65,16 @@ export class NegociacaoController {
     }
 }
 __decorate([
+    domInjector('#data')
+], NegociacaoController.prototype, "inputData", void 0);
+__decorate([
+    domInjector('#quantidade')
+], NegociacaoController.prototype, "inputQuantidade", void 0);
+__decorate([
+    domInjector('#valor')
+], NegociacaoController.prototype, "inputValor", void 0);
+__decorate([
+    inspect(),
     tempoDeExecucao()
 ], NegociacaoController.prototype, "adiciona", null);
+//# sourceMappingURL=negociacao-controller.js.map

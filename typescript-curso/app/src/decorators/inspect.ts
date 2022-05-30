@@ -10,13 +10,12 @@ export function inspect()
 
         descriptor.value = function(...args : any[])
         {
-            console.log(`____metodo: ${propertyKey}`);            
-            console.log(`_________parametros: ${JSON.stringify(args)}`);
+            console.log(`metodo: ${propertyKey}`);            
+            console.log(`parametros: ${JSON.stringify(args)}`);
             const retorno = metodoOriginal.apply(this,args);
-            console.log(`_________retorno: ${JSON.stringify(retorno)}`);            
-            return retorno
+            console.log(`retorno: ${JSON.stringify(retorno)}`);            
+            return retorno;
         }
-
 
         return descriptor;
     }

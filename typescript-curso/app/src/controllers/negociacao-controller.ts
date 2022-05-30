@@ -6,6 +6,8 @@ import { DiasDaSemana } from '../enum/dias-da-semana.js';
 import { tempoDeExecucao } from '../decorators/tempo-de-execucao.js';
 import { inspect } from '../decorators/inspect.js';
 import { domInjector } from '../decorators/dom-injector.js';
+import { NegociacoesService } from '../servicos/negociacoesServices.js';
+import { imprimir } from '../utils/imprimir.js';
 
 export class NegociacaoController {
     @domInjector('#data')
@@ -17,6 +19,7 @@ export class NegociacaoController {
     private negociacoes = new Negociacoes();
     private negociacoesView = new NegociacoesView('#negociacoesView');
     private mensagemView = new MensagemView('#mensagemView');
+    private negociacoesService = new NegociacoesService();
 
     constructor() 
     {
@@ -32,13 +35,39 @@ export class NegociacaoController {
                                             this.inputValor.value);
 
         if(!this.verificaDiaUtil(negociacao.data))        
-        {
+        {            
             this.mensagemView.update('Apenas negocia&ccedil&otildees em dias uteis s&atildeo aceitas.');
             return;
         }
 
         this.negociacoes.adiciona(negociacao);
+
+        imprimir(negociacao, this.negociacoes);
+
         this.atualizaview();        
+    }
+
+    public importaDados(): void
+    {        
+        this.negociacoesService.obterNegociacoesDoDia()
+            .then(negociacoesDeHoje => 
+            {
+                return negociacoesDeHoje.filter(negociacoesDeHoje => 
+                {
+                    return !this.negociacoes
+                                    .lista()
+                                    .some(Negociacao => Negociacao.ehIgual(negociacoesDeHoje))
+                })
+            })
+            .then(negociacoesArrayJson =>
+            
+        {
+            for(let negociacao of negociacoesArrayJson)
+            {
+                this.negociacoes.adiciona(negociacao);
+            }
+            this.negociacoesView.update(this.negociacoes);
+        });
     }
 
     private limparFormulario(): void {

@@ -1,8 +1,8 @@
 export function domInjector(seletor:string)
 {
-    return function(target : any,propertyKey : string)
+    return function(target : any, propertyKey : string)
     {
-        let elemento = HTMLElement;
+        let elemento:HTMLElement;
         const getter = function()
         {
             if(!elemento)

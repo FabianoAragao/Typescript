@@ -11,3 +11,13 @@ else {
     throw Error(`N&atildeo foi poss&iacutevel inicializar a 
                         aplica&ccedil&atildeo.`);
 }
+const btnImporta = document.querySelector('#botao-importa');
+if (btnImporta) {
+    btnImporta.addEventListener('click', () => {
+        controller.importaDados();
+    });
+}
+else {
+    throw Error(`bot&atildeo importa n&atildeo foi encontrado.`);
+}
+//# sourceMappingURL=app.js.map
